@@ -1,0 +1,17 @@
+.account-name {
+    float: right;
+    margin-left: auto;
+}
+
+#home-nav {
+    margin-left: 15px;
+}
+
+#basic-nav-dropdown {
+    margin-right: 25px;
+}
+
+.nav-dropdown {
+    margin-right: 35px;
+    color: red;
+}

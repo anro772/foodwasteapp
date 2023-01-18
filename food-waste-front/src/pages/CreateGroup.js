@@ -5,6 +5,8 @@ import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 function CreateGroupPage() {
   const [groups, setGroups] = useState([]);
@@ -12,6 +14,8 @@ function CreateGroupPage() {
   const [userId, setUserId] = useState("");
   const [gID, setGID] = useState("");
   let [users, setUsers] = useState([]);
+  let [friends, setFriends] = useState([]);
+  let [friendsList, setFriendsList] = useState([]);
 
   const setUsersWithCallback = (newUsers, callback) => {
     setUsers(newUsers, callback);
@@ -42,10 +46,8 @@ function CreateGroupPage() {
       setUserId(response.data.id);
       await getUserGroups(response.data.id);
       await getUsers(response.data.id);
-      console.log(users);
     }
   }
-
 
   function onClickFridge() {
     navigate('/fridge');
@@ -87,7 +89,6 @@ function CreateGroupPage() {
       }
     });
   }
-
 
   const addUserGroup = async (gid) => {
     const response = await axios.post("http://localhost:8080/createUserGroup", {
@@ -142,6 +143,126 @@ function CreateGroupPage() {
             users.push(response.data[i]);
           }
         }
+        setUsers(users);
+      }
+    });
+  }
+
+  const hideToggle = (id, name, preference) => {
+    console.log(id, name, preference);
+    //clear localstorage
+    localStorage.clear();
+    document.getElementById('card-add').removeAttribute('hidden');
+    document.getElementById('transparent-dark').removeAttribute('hidden');
+    //save id name and preference in localStorage
+    localStorage.setItem('groupId', id);
+    localStorage.setItem('groupName', name);
+    localStorage.setItem('groupPreference', preference);
+  }
+
+  const hideToggleView = (id, name, preference) => {
+    //clear localstorage
+    localStorage.clear();
+    document.getElementById('card-view').removeAttribute('hidden');
+    document.getElementById('transparent-dark').removeAttribute('hidden');
+    //save id name and preference in localStorage
+    localStorage.setItem('groupId', id);
+    localStorage.setItem('groupName', name);
+    localStorage.setItem('groupPreference', preference);
+
+    viewFriends(id, userId);
+  }
+
+  const showToggleView = () => {
+    document.getElementById('card-view').setAttribute('hidden', 'true');
+    document.getElementById('transparent-dark').setAttribute('hidden', 'true');
+    localStorage.clear();
+  }
+
+  const showToggle = () => {
+    document.getElementById('card-add').setAttribute('hidden', 'true');
+    document.getElementById('transparent-dark').setAttribute('hidden', 'true');
+    localStorage.clear();
+  }
+
+  const cLog = (users) => {
+    console.log(users.length);
+    let listGroupItems = [];
+    for (let i = 0; i < users.length; i++) {
+      listGroupItems.push(<ListGroup.Item key={i}>users[i].username</ListGroup.Item>)
+      console.log(users[i].username);
+    }
+    return listGroupItems;
+  }
+
+  const addUserToGroup = async (uid) => {
+    const gid = localStorage.getItem('groupId');
+    const gname = localStorage.getItem('groupName');
+    const gpreference = localStorage.getItem('groupPreference');
+    console.log(gid, gname, gpreference, uid);
+
+    const response1 = await axios.get("http://localhost:8080/userGroups/" + uid + '', {
+      headers: {
+        accessToken: sessionStorage.getItem('accessToken')
+      }
+    }).then((response1) => {
+      if (response1.data.error) {
+      }
+      else {
+        for (let i = 0; i < response1.data.length; i++) {
+          if (response1.data[i].groupId == gid) {
+            alert("User is already in group");
+            return;
+          }
+        }
+        const response = axios.post("http://localhost:8080/createUserGroup", {
+          userId: uid,
+          groupId: gid,
+          groupName: gname,
+          preference: gpreference
+        },
+          {
+            headers: {
+              accessToken: sessionStorage.getItem('accessToken')
+            }
+          }
+        ).then((response) => {
+          if (response.data.error) {
+            console.log(response.data.error);
+          }
+          else {
+            console.log(response.data);
+          }
+        }
+        );
+      }
+    });
+  }
+
+  const viewFriends = (gid, uid) => {
+    const response = axios.get("http://localhost:8080/groupMembers/" + gid + '', {
+      headers: {
+        accessToken: sessionStorage.getItem('accessToken')
+      }
+    }).then((response) => {
+      if (response.data.error) {
+      }
+      else {
+        friends = [];
+        friendsList = [];
+        for (let i = 0; i < response.data.length; i++) {
+          if (response.data[i].userId != uid) {
+            friends.push(response.data[i].userId);
+            console.log(friends);
+          }
+        }
+        for (let i = 0; i < users.length; i++) {
+          if (friends.includes(users[i].id)) {
+            friendsList.push(users[i]);
+          }
+          console.log(friendsList);
+          setFriendsList(friendsList);
+        }
       }
     });
   }
@@ -150,7 +271,7 @@ function CreateGroupPage() {
 
   return (
     <div>
-
+      <div hidden id="transparent-dark"></div>
       <Navbar bg="light" expand="lg" >
         <Navbar.Brand onClick={onClickHome} href="/" id="home-nav" >Home</Navbar.Brand >
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -168,7 +289,7 @@ function CreateGroupPage() {
       </Navbar>
       <div className="CreateGroupPage">
         <h2>Create Group:</h2>
-        <div>
+        <div id="labels">
           <label>
             Group Name:
             <input type="text" name="groupName" id="setGroupName" />
@@ -182,24 +303,54 @@ function CreateGroupPage() {
               <option value="zacusca-lover">Zacusca lover</option>
             </select>
           </label>
-          <button onClick={createGroup}>Create Group</button>
+
         </div>
+        <button type="button" className="btn btn-success" id="btn-create-group" onClick={createGroup}>Create a Group</button>
         <div >
           <h2>Groups:</h2>
           <ul className="groups-list">
             {groups.map((groups) => (
-              <li key={groups.id} className="groups-li">
+              <li key={groups.id} className="groups-li" >
                 <h3>{groups.groupName}</h3>
                 <p>{groups.preference}</p>
+                <div className="buttons">
+                  <button type="button" className="btn btn-primary btn-view-friends" onClick={() => hideToggleView(groups.groupId, groups.groupName, groups.preference)}>View Friends</button>
+                  <button type="button" className="btn btn-primary btn-add-friends" onClick={() => hideToggle(groups.groupId, groups.groupName, groups.preference)}>Add Friends</button>
+                </div>
               </li>
             ))}
-
           </ul>
         </div>
       </div>
+      <div>
+        <Card style={{ width: '30rem' }} id='card-add' hidden>
+          <Card.Header id="card-header">
+            <button type="button" className="btn-close card-close" aria-label="Close" onClick={showToggle}></button>Add a User to the group</Card.Header>
+          <ListGroup variant="flush">
+            {users.map((users) => (
+              <ListGroup.Item key={users.id} className="groups-li-item" onClick={() => addUserToGroup(users.id)}>
+                <h6>{users.username}</h6>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Card>
+        <Card style={{ width: '30rem' }} id='card-view' hidden>
+          <Card.Header id="card-header">
+            <button type="button" className="btn-close card-close" aria-label="Close" onClick={showToggleView}></button>Your friends in this group</Card.Header>
+          <ListGroup variant="flush">
+            {friendsList.map((friendsList) => (
+              <div key={friendsList.id} className="friends-li">
+                <ListGroup.Item key={friendsList.userId} className="groups-li-item">
+                  <h6>{friendsList.username}</h6>
+                </ListGroup.Item>
+              </div>
+            ))}
+          </ListGroup>
+        </Card>
+      </div>
+
     </div>
   );
-
 }
 
 export default CreateGroupPage;

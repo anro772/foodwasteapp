@@ -6,28 +6,28 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                len: [4, 15]
+                len: [1, 30]
             }
         },
         lastName: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                len: [4, 15]
+                len: [1, 30]
             }
         },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                len: [6, 20]
+                len: [6, 30]
             }
         },
         username: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                len: [4, 30]
+                len: [1, 30]
             }
         },
         id: {

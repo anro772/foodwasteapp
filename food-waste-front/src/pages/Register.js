@@ -1,13 +1,17 @@
 import React from 'react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 const SERVER_ADDR = "http://localhost:8080";
 
 function Register() {
-    const [usernameReg, setUsernameReg] = useState("");
-    const [passwordReg, setPasswordReg] = useState("");
-    const [firstNameReg, setFirstNameReg] = useState("");
-    const [lastNameReg, setLastNameReg] = useState("");
+    let [usernameReg, setUsernameReg] = useState("");
+    let [passwordReg, setPasswordReg] = useState("");
+    let [firstNameReg, setFirstNameReg] = useState("");
+    let [lastNameReg, setLastNameReg] = useState("");
+
+    let navigate = useNavigate();
 
     const register = () => {
         axios.post("http://localhost:8080/register", {
@@ -16,7 +20,19 @@ function Register() {
             firstName: firstNameReg,
             lastName: lastNameReg,
         }).then((response) => {
-            console.log(response);
+            console.log(response.data);
+            axios.post("http://localhost:8080/login", {
+                username: response.data.username,
+                password: response.data.password
+            }).then((response) => {
+                if (response.data.msg) {
+                    if (response.data.msg == 'ok') {
+                        console.log('ok');
+                        sessionStorage.setItem('accessToken', response.data.token);
+                        navigate('/');
+                    }
+                }
+            });
         });
     }
 
@@ -25,20 +41,20 @@ function Register() {
             <h1>Registration</h1>
             <label>Username</label>
             <input type="text-register" onChange={(e) => {
-                setUsernameReg(e.target.value);
+                usernameReg = e.target.value;
             }} />
             <label>Password</label>
             <input type="password" onChange={(e) => {
-                setPasswordReg(e.target.value);
+                passwordReg = e.target.value;
             }} />
 
             <label>First Name</label>
             <input type="text-register" onChange={(e) => {
-                setFirstNameReg(e.target.value);
+                firstNameReg = e.target.value;
             }} />
             <label>Last Name</label>
             <input type="text-register" onChange={(e) => {
-                setLastNameReg(e.target.value);
+                lastNameReg = e.target.value;
             }} /><button onClick={register}>Register</button>
         </div>
     );

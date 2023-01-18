@@ -24,7 +24,6 @@ function Home() {
         navigate('/groups');
     }
 
-
     const [username, setUsername] = useState("");
 
     const headers = new Headers({
@@ -41,47 +40,19 @@ function Home() {
                 console.log(response.data.error);
             }
             else {
-
                 setUsername(response.data.username);
             }
         });
     }
-
-
-    //VERY IMPORTANT ----------------------------------------------------
-    const logSomething = () => {
-        axios.post("http://localhost:8080/addFood", {
-            category: "Vegetable",
-            price: "3",
-            foodName: "Potato"
-        },
-            {
-                headers: {
-                    accessToken: sessionStorage.getItem('accessToken')
-                }
-            }
-        ).then((response) => {
-            if (response.data.error) {
-                console.log(response.data.error);
-            }
-            else {
-                // console.log(response);
-                console.log(response.data);
-            }
-        });
-    }
-    //VERY IMPORTANT ----------------------------------------------------
-
 
     useEffect(() => {
         //check if session storage has accessToken
         if (!sessionStorage.getItem('accessToken')) {
             navigate('/login');
         }
-        getUser();
+        else
+            getUser();
     }, []);
-
-    console.log(username);
 
     return (
         <div>

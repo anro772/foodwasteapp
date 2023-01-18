@@ -35,7 +35,7 @@ function Login() {
 
     const goRegister = () => {
         //change address bar to localhost:3000/register
-        window.location.href = "/register";
+        navigate('/register');
     }
 
 

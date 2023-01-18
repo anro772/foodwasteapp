@@ -67,11 +67,13 @@ const createUserGroup = async ({ userId, groupId, groupName, preference }) => {
 };
 
 const getGroupMembers = async groupId => {
+    //get the users that are in group with groupId
     return await UserGroups.findAll({
         where: {
             groupId,
         },
     });
+
 };
 
 //const joinUserGroup = async ({ userId, groupId, groupName, preference }) => {

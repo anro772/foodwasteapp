@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import './CreateGroup.css'
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
@@ -11,24 +11,41 @@ function CreateGroupPage() {
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState("");
   const [gID, setGID] = useState("");
+  let [users, setUsers] = useState([]);
+
+  const setUsersWithCallback = (newUsers, callback) => {
+    setUsers(newUsers, callback);
+  }
 
   let navigate = useNavigate();
 
-  const getUser = () => {
-    axios.get("http://localhost:8080/current", {
+  const dataFetch = useRef(false);
+
+  useEffect(() => {
+    if (!dataFetch.current) {
+      getUser();
+      dataFetch.current = true;
+    }
+  }, []);
+
+  const getUser = async () => {
+    const response = await axios.get("http://localhost:8080/current", {
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
       }
-    }).then((response) => {
-      if (response.data.error) {
-        console.log(response.data.error);
-      }
-      else {
-        setUsername(response.data.username);
-        setUserId(response.data.id);
-      }
     });
+    if (response.data.error) {
+      console.log(response.data.error);
+    }
+    else {
+      setUsername(response.data.username);
+      setUserId(response.data.id);
+      await getUserGroups(response.data.id);
+      await getUsers(response.data.id);
+      console.log(users);
+    }
   }
+
 
   function onClickFridge() {
     navigate('/fridge');
@@ -47,12 +64,11 @@ function CreateGroupPage() {
     navigate('/');
   }
 
-  useEffect(() => {
-    getUser();
-  }, []);
 
-  function createGroup() {
-    axios.post("http://localhost:8080/createGroup", {
+
+
+  const createGroup = async () => {
+    const response = await axios.post("http://localhost:8080/createGroup", {
       groupName: document.getElementById("setGroupName").value
     },
       {
@@ -73,8 +89,8 @@ function CreateGroupPage() {
   }
 
 
-  function addUserGroup(gid) {
-    axios.post("http://localhost:8080/createUserGroup", {
+  const addUserGroup = async (gid) => {
+    const response = await axios.post("http://localhost:8080/createUserGroup", {
       userId: userId,
       groupId: gid,
       groupName: document.getElementById("setGroupName").value,
@@ -96,10 +112,47 @@ function CreateGroupPage() {
     );
   }
 
+  const getUserGroups = async (id) => {
+    const response = await axios.get("http://localhost:8080/userGroups/" + id + '', {
+      headers: {
+        accessToken: sessionStorage.getItem('accessToken')
+      }
+    }).then((response) => {
+      if (response.data.error) {
+      }
+      else {
+        setGroups(response.data);
+      }
+    });
+  }
+
+  const getUsers = async (id) => {
+    await axios.get("http://localhost:8080/users", {
+      headers: {
+        accessToken: sessionStorage.getItem('accessToken')
+      }
+    }).then((response) => {
+      if (response.data.error) {
+        console.log(response.data.error);
+      }
+      else {
+        users = [];
+        for (let i = 0; i < response.data.length; i++) {
+          if (response.data[i].id != id) {
+            users.push(response.data[i]);
+          }
+        }
+      }
+    });
+  }
+
+
+
   return (
     <div>
-      <Navbar bg="light" expand="lg">
-        <Navbar.Brand onClick={onClickHome} id="home-nav">Home</Navbar.Brand >
+
+      <Navbar bg="light" expand="lg" >
+        <Navbar.Brand onClick={onClickHome} href="/" id="home-nav" >Home</Navbar.Brand >
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
@@ -131,31 +184,18 @@ function CreateGroupPage() {
           </label>
           <button onClick={createGroup}>Create Group</button>
         </div>
-        {/* <div>
+        <div >
           <h2>Groups:</h2>
           <ul className="groups-list">
-            {groups.map(({ groupName, dietaryPreference, friends }, groupIndex) => (
-              <li key={groupIndex}>
-                <h3>{groupName} - {dietaryPreference}</h3>
-                <form >
-                  <label>
-                    Add Friend:
-                    <input type="text" name="friendName" />
-                  </label>
-                  <input type="submit" value="Add Friend" />
-                </form>
-                <div className="friends-list">
-                  <h4>Friends:</h4>
-                  <ul>
-                    {friends.map((friend, friendIndex) => (
-                      <li key={friendIndex}>{friend}</li>
-                    ))}
-                  </ul>
-                </div>
+            {groups.map((groups) => (
+              <li key={groups.id} className="groups-li">
+                <h3>{groups.groupName}</h3>
+                <p>{groups.preference}</p>
               </li>
             ))}
+
           </ul>
-        </div> */}
+        </div>
       </div>
     </div>
   );

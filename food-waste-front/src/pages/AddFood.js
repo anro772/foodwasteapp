@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './AddFoodForm.css';
 import { useEffect } from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
@@ -20,11 +20,18 @@ function AddFoodForm() {
   const [foodCategory, setFoodCategory] = useState(CATEGORY_OPTIONS[0].value);
   const [foodPrice, setFoodPrice] = useState('');
   const [foodName, setFoodName] = useState('');
+  const [availability, setAvailability] = useState('');
   const [errors, setErrors] = useState({});
 
   const [username, setUsername] = useState("");
+  const [userId, setUserId] = useState("");
 
   let navigate = useNavigate();
+
+  const dataFetch = useRef(false);
+
+
+
 
   const getUser = () => {
     axios.get("http://localhost:8080/current", {
@@ -36,8 +43,8 @@ function AddFoodForm() {
         console.log(response.data.error);
       }
       else {
-
         setUsername(response.data.username);
+        setUserId(response.data.id);
       }
     });
   }
@@ -63,8 +70,39 @@ function AddFoodForm() {
     navigate('/');
   }
 
+  const addFood = () => {
+
+    if (foodName && availability) {
+      const dateRegex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+      if (dateRegex.test(availability)) {
+        axios.post("http://localhost:8080/addUserFridge", {
+          userId: userId,
+          foodName: foodName,
+          availability: availability,
+          foodCategory: foodCategory,
+        }).then((response) => {
+          if (response.data.error) {
+            console.log(response.data.error);
+          }
+          else {
+            console.log(response.data);
+          }
+        });
+      }
+    }
+  }
+
   useEffect(() => {
-    getUser();
+    if (!dataFetch.current) {
+
+      //check if session storage has accessToken
+      if (!sessionStorage.getItem('accessToken')) {
+        navigate('/login');
+      }
+
+      getUser();
+      dataFetch.current = true;
+    }
   }, []);
 
   const validate = () => {
@@ -72,11 +110,16 @@ function AddFoodForm() {
     if (!foodName) {
       newErrors.foodName = 'Food name is required';
     }
-    if (!foodPrice) {
-      newErrors.foodPrice = 'Food price is required';
+    if (!availability) {
+      newErrors.availability = 'Food availability is required';
     }
-    if (isNaN(foodPrice)) {
-      newErrors.foodPrice = 'Food price should be a number';
+
+    //check availability is date type in format /dd/mm/yyyy for example 01/01/2021
+    if (availability) {
+      const dateRegex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+      if (!dateRegex.test(availability)) {
+        newErrors.availability = 'Availability must be a date';
+      }
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -98,7 +141,7 @@ function AddFoodForm() {
 
     <div>
       <Navbar bg="light" expand="lg">
-        <Navbar.Brand onClick={onClickHome} id="home-nav">Home</Navbar.Brand >
+        <Navbar.Brand onClick={onClickHome} href="/" id="home-nav">Home</Navbar.Brand >
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
@@ -112,8 +155,9 @@ function AddFoodForm() {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
+
       <form className="add-food-form" onSubmit={handleSubmit}>
-        <label class="form-item">
+        <label className="form-item">
           Food Category:
           <select className="form-control" value={foodCategory} onChange={(e) => setFoodCategory(e.target.value)}>
             {CATEGORY_OPTIONS.map((category) => (
@@ -124,18 +168,9 @@ function AddFoodForm() {
           </select>
         </label>
         <br />
-        <label class="form-item">
-          Food Price:
-          <input
-            className="form-control"
-            type="text"
-            value={foodPrice}
-            onChange={(event) => setFoodPrice(event.target.value)}
-          />
-          {errors.foodPrice && <div className="error-message">{errors.foodPrice}</div>}
-        </label>
+
         <br />
-        <label class="form-item">
+        <label className="form-item">
           Food Name:
           <input
             className="form-control"
@@ -145,9 +180,20 @@ function AddFoodForm() {
           />
           {errors.foodName && <div className="error-message">{errors.foodName}</div>}
         </label>
+        <label className="form-item">
+          Availability:
+          <input
+            className="form-control"
+            type="text"
+            value={availability}
+            onChange={(event) => setAvailability(event.target.value)}
+          />
+          {errors.availability && <div className="error-message">{errors.availability}</div>}
+        </label>
         <br />
-        <button className="add-food-button" type="submit">Add food to fridge</button>
+        <button className="add-food-button" type="submit" onClick={addFood}>Add food to fridge</button>
       </form>
+
     </div>
   );
 }

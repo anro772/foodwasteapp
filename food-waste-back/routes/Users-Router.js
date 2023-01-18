@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
-const Foods = require('../models').Foods;
+//const Foods = require('../models').Foods;
 const UserFridge = require('../models').UserFridge;
 const Groups = require('../models').Groups;
 const UserGroups = require('../models').UserGroups;
@@ -50,13 +50,13 @@ const getUserByUsername = async username => {
     });
 };
 
-const createFood = async ({ category, price, foodName }) => {
-    return await Foods.create({ category, price, foodName });
-};
+// const createFood = async ({ category, price, foodName }) => {
+//     return await Foods.create({ category, price, foodName });
+// };
 
-const getFoods = async () => {
-    return await Foods.findAll();
-};
+// const getFoods = async () => {
+//     return await Foods.findAll();
+// };
 
 const createGroup = async ({ groupName }) => {
     return await Groups.create({ groupName });
@@ -66,8 +66,27 @@ const createUserGroup = async ({ userId, groupId, groupName, preference }) => {
     return await UserGroups.create({ userId, groupId, groupName, preference });
 };
 
-const createUserFridge = async ({ userId, foodId, availability }) => {
-    return await UserFridge.create({ userId, foodId, availability });
+const getGroupMembers = async groupId => {
+    return await UserGroups.findAll({
+        where: {
+            groupId,
+        },
+    });
+};
+
+//const joinUserGroup = async ({ userId, groupId, groupName, preference }) => {
+
+
+const createUserFridge = async ({ userId, foodName, availability, foodCategory }) => {
+    return await UserFridge.create({ userId, foodName, availability, foodCategory });
+};
+
+const removeUserFridge = async ({ id }) => {
+    return await UserFridge.destroy({
+        where: {
+            id,
+        },
+    });
 };
 
 const getFoodsInFridge = async userId => {
@@ -138,21 +157,27 @@ router.get('/protected', passport.authenticate('jwt', { session: false }), funct
 });
 
 
-router.post('/addFood', validateToken, async (req, res) => {
-    const { category, price, foodName } = req.body;
-    const username = req.user.username;
-    const food = await createFood({ category, price, foodName });
-    food.username = username;
-    res.json(food);
-});
+// router.post('/addFood', validateToken, async (req, res) => {
+//     const { category, price, foodName } = req.body;
+//     const username = req.user.username;
+//     const food = await createFood({ category, price, foodName });
+//     food.username = username;
+//     res.json(food);
+// });
 
 router.get('/foods', async (req, res) => {
     getFoods().then(foods => res.json(foods));
 });
 
 router.post('/addUserFridge', async (req, res) => {
-    const { userId, foodId, availability } = req.body;
-    const UserFridge = await createUserFridge({ userId, foodId, availability });
+    const { userId, foodName, availability, foodCategory } = req.body;
+    const UserFridge = await createUserFridge({ userId, foodName, availability, foodCategory });
+    res.json(UserFridge);
+});
+
+router.post('/removeUserFridge', async (req, res) => {
+    const { id } = req.body;
+    const UserFridge = await removeUserFridge({ id });
     res.json(UserFridge);
 });
 
@@ -192,6 +217,11 @@ function getUserGroups(userId) {
 router.get('/userGroups/:userId', async (req, res) => {
     const { userId } = req.params;
     getUserGroups(userId).then(groups => res.json(groups));
+});
+
+router.get('/groupMembers/:groupId', async (req, res) => {
+    const { groupId } = req.params;
+    getGroupMembers(groupId).then(members => res.json(members));
 });
 
 

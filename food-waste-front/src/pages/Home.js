@@ -74,6 +74,10 @@ function Home() {
 
 
     useEffect(() => {
+        //check if session storage has accessToken
+        if (!sessionStorage.getItem('accessToken')) {
+            navigate('/login');
+        }
         getUser();
     }, []);
 
@@ -82,7 +86,7 @@ function Home() {
     return (
         <div>
             <Navbar bg="light" expand="lg">
-                <Navbar.Brand href="#home" id="home-nav">Home</Navbar.Brand >
+                <Navbar.Brand href="/" id="home-nav">Home</Navbar.Brand >
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">

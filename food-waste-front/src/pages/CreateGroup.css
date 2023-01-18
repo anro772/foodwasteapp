@@ -85,3 +85,7 @@ input[type="submit"]:hover {
   list-style: none;
   width: 500px;
 }
+
+.groups-li:hover {
+  background-color: #dfdfdf;
+}

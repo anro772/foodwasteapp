@@ -24,7 +24,7 @@ function Register() {
         <div className="registration">
             <h1>Registration</h1>
             <label>Username</label>
-            <input type="text" onChange={(e) => {
+            <input type="text-register" onChange={(e) => {
                 setUsernameReg(e.target.value);
             }} />
             <label>Password</label>
@@ -33,11 +33,11 @@ function Register() {
             }} />
 
             <label>First Name</label>
-            <input type="text" onChange={(e) => {
+            <input type="text-register" onChange={(e) => {
                 setFirstNameReg(e.target.value);
             }} />
             <label>Last Name</label>
-            <input type="text" onChange={(e) => {
+            <input type="text-register" onChange={(e) => {
                 setLastNameReg(e.target.value);
             }} /><button onClick={register}>Register</button>
         </div>

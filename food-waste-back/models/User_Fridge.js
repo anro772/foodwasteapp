@@ -7,24 +7,31 @@ module.exports = (sequelize, DataTypes) => {
                 len: [1, 15]
             }
         },
-        foodId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            validate: {
-                len: [1, 15]
-            }
-        },
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true
         },
+        foodName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: [1, 35]
+            }
+        },
+        foodCategory: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                len: [1, 35]
+            }
+        },
     });
 
     UserFridge.associate = (models) => {
-        UserFridge.hasMany(models.Foods, {
-            foreignKey: 'id'
-        })
+        // UserFridge.hasMany(models.Foods, {
+        //     foreignKey: 'id'
+        // })
 
         UserFridge.belongsTo(models.Users, {
             foreignKey: 'userId'

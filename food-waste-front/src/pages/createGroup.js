@@ -1,80 +1,165 @@
- import React, { useState } from 'react';
- import './group.css'
- import { useEffect } from 'react';
+import React, { useState } from 'react';
+import './CreateGroup.css'
+import { useEffect } from 'react';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-
-
-function App() {
+function CreateGroupPage() {
   const [groups, setGroups] = useState([]);
+  const [username, setUsername] = useState("");
+  const [userId, setUserId] = useState("");
+  const [gID, setGID] = useState("");
 
-  function handleCreateGroup(event) {
-    event.preventDefault();
-    const groupName = event.target.groupName.value;
-    const dietaryPreference = event.target.dietaryPreference.value;
-    setGroups([...groups, { groupName, dietaryPreference, friends: [] }]);
+  let navigate = useNavigate();
+
+  const getUser = () => {
+    axios.get("http://localhost:8080/current", {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+      }
+    }).then((response) => {
+      if (response.data.error) {
+        console.log(response.data.error);
+      }
+      else {
+        setUsername(response.data.username);
+        setUserId(response.data.id);
+      }
+    });
   }
 
-  function handleAddFriend(groupIndex, event) {
-    event.preventDefault();
-    const newFriend = event.target.friendName.value;
-    const updatedGroup = { ...groups[groupIndex] };
-    updatedGroup.friends = [...updatedGroup.friends, newFriend];
-    const newGroups = [...groups];
-    newGroups[groupIndex] = updatedGroup;
-    setGroups(newGroups);
+  function onClickFridge() {
+    navigate('/fridge');
+  }
+
+  function onClickLogout() {
+    sessionStorage.removeItem('accessToken');
+    navigate('/login');
+  }
+
+  function onClickGroups() {
+    navigate('/groups');
+  }
+
+  function onClickHome() {
+    navigate('/');
+  }
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  function createGroup() {
+    axios.post("http://localhost:8080/createGroup", {
+      groupName: document.getElementById("setGroupName").value
+    },
+      {
+        headers: {
+          accessToken: sessionStorage.getItem('accessToken')
+        }
+      }
+    ).then((response,) => {
+      setGID(response.data.id);
+      if (response.data.error) {
+        console.log(response.data.error);
+      }
+      else {
+        console.log(response.data.id);
+        addUserGroup(response.data.id);
+      }
+    });
+  }
+
+
+  function addUserGroup(gid) {
+    axios.post("http://localhost:8080/createUserGroup", {
+      userId: userId,
+      groupId: gid,
+      groupName: document.getElementById("setGroupName").value,
+      preference: document.getElementById("setPreference").options[document.getElementById("setPreference").selectedIndex].value
+    },
+      {
+        headers: {
+          accessToken: sessionStorage.getItem('accessToken')
+        }
+      }
+    ).then((response) => {
+      if (response.data.error) {
+        console.log(response.data.error);
+      }
+      else {
+        console.log(response.data);
+      }
+    }
+    );
   }
 
   return (
-    <div className="App">
-      <h2>Create Group:</h2>
-      <form onSubmit={handleCreateGroup}>
-        <label>
-          Group Name:
-          <input type="text" name="groupName" />
-        </label>
-        <label>
-          Dietary Preference:
-          <select name="dietaryPreference">
-            <option value=""></option>
-            <option value="vegetarian">Vegetarian</option>
-            <option value="carnivore">Carnivore</option>
-            <option value="zacusca-lover">Zacusca lover</option>
-          </select>
-        </label>
-        <input type="submit" value="Create Group" />
-      </form>
-      <div>
-        <h2>Groups:</h2>
-        <ul className="groups-list">
-          {groups.map(({ groupName, dietaryPreference, friends }, groupIndex) => (
-            <li key={groupIndex}>
-              <h3>{groupName} - {dietaryPreference}</h3>
-              <form onSubmit={handleAddFriend.bind(null, groupIndex)}>
-                <label>
-                  Add Friend:
-                  <input type="text" name="friendName" />
-                </label>
-                <input type="submit" value="Add Friend" />
-              </form>
-              <div className="friends-list">
-                <h4>Friends:</h4>
-                <ul>
-                  {friends.map((friend, friendIndex) => (
-                    <li key={friendIndex}>{friend}</li>
-                  ))}
-                </ul>
-              </div>
-            </li>
-          ))}
-        </ul>
+    <div>
+      <Navbar bg="light" expand="lg">
+        <Navbar.Brand onClick={onClickHome} id="home-nav">Home</Navbar.Brand >
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mr-auto">
+            <Nav.Link onClick={onClickFridge}>Fridge</Nav.Link>
+            <Nav.Link onClick={onClickGroups}>Groups</Nav.Link>
+          </Nav>
+          <Nav className='account-name'>
+            <NavDropdown title={username} id="basic-nav-dropdown">
+              <NavDropdown.Item className="nav-dropdown" onClick={onClickLogout}>Log Out</NavDropdown.Item>
+            </NavDropdown>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+      <div className="CreateGroupPage">
+        <h2>Create Group:</h2>
+        <div>
+          <label>
+            Group Name:
+            <input type="text" name="groupName" id="setGroupName" />
+          </label>
+          <label>
+            Dietary Preference:
+            <select name="dietaryPreference" id="setPreference">
+              <option value=""></option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="carnivore">Carnivore</option>
+              <option value="zacusca-lover">Zacusca lover</option>
+            </select>
+          </label>
+          <button onClick={createGroup}>Create Group</button>
+        </div>
+        {/* <div>
+          <h2>Groups:</h2>
+          <ul className="groups-list">
+            {groups.map(({ groupName, dietaryPreference, friends }, groupIndex) => (
+              <li key={groupIndex}>
+                <h3>{groupName} - {dietaryPreference}</h3>
+                <form >
+                  <label>
+                    Add Friend:
+                    <input type="text" name="friendName" />
+                  </label>
+                  <input type="submit" value="Add Friend" />
+                </form>
+                <div className="friends-list">
+                  <h4>Friends:</h4>
+                  <ul>
+                    {friends.map((friend, friendIndex) => (
+                      <li key={friendIndex}>{friend}</li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div> */}
       </div>
     </div>
   );
 
 }
 
-export default App;
-
-
-
-//export default {FriendGroupForm};
+export default CreateGroupPage;

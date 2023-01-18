@@ -1,0 +1,67 @@
+.registration {
+    padding: 40px;
+    text-align: center;
+    border-radius: 10px;
+    background-image: linear-gradient(to right, #3498db, #8e44ad);
+    animation: background-animation 2s ease-in-out infinite;
+    color: white;
+}
+
+
+.registration h1 {
+    font-size: 50px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.registration label {
+    font-size: 18px;
+    margin-bottom: 10px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.registration input[type="text-register"],
+.registration input[type="password"] {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    color: white;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+    background-color: transparent;
+}
+
+.registration input[type="text-register"]:focus,
+.registration input[type="password"]:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 10px #4CAF50;
+}
+
+.registration button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 4px;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease-in-out;
+}
+
+.registration button:hover {
+    background-color: #3e8e41;
+    box-shadow: 0 0 10px #3e8e41;
+}
+
+.registration h1 {
+    text-shadow: 2px 2px 2px #000000;
+}

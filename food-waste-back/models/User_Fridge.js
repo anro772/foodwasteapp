@@ -29,10 +29,6 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     UserFridge.associate = (models) => {
-        // UserFridge.hasMany(models.Foods, {
-        //     foreignKey: 'id'
-        // })
-
         UserFridge.belongsTo(models.Users, {
             foreignKey: 'userId'
         });

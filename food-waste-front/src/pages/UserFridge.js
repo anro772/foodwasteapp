@@ -9,8 +9,6 @@ import { useNavigate } from 'react-router-dom';
 function UserFridgePage() {
   let [foodItems, setFoodItems] = useState([]);
   const [username, setUsername] = useState("");
-  //const [userId, setUserId] = useState("");
-  //   const history = useHistory();
   let [userId, setUserId] = useState("");
 
   let navigate = useNavigate();
@@ -24,7 +22,7 @@ function UserFridgePage() {
     }
   }, []);
 
-  const getUser = () => {
+  const getUser = () => { //function to get the user from the backend with the authorization bearer token
     axios.get("http://localhost:8080/current", {
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
@@ -41,7 +39,7 @@ function UserFridgePage() {
     });
   }
 
-  const getFoods = async (id) => {
+  const getFoods = async (id) => {  //function to get the foods from the backend with the authorization bearer token
     axios.get('http://localhost:8080/foodsInFridge/' + id + '', {
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
@@ -55,12 +53,11 @@ function UserFridgePage() {
         setFoodItems(foodItems);
         foodItems = response.data;
         setFoodItems(foodItems);
-        console.log(foodItems);
       }
     });
   }
 
-  const removeFridge = async (id) => {
+  const removeFridge = async (id) => { //function to remove the food from the fridge
     axios.post('http://localhost:8080/removeUserFridge', {
       id: id,
       headers: {
@@ -71,16 +68,11 @@ function UserFridgePage() {
         console.log(response.data.error);
       }
       else {
-        //refresh page
         window.location.reload();
       }
     });
   }
-
-  const consoleLog = async (id) => {
-    console.log(id);
-  }
-
+  //navigation functions
   function onClickAddFood() {
     navigate('/addfood')
   }

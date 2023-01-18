@@ -17,7 +17,7 @@ function Login() {
 
     let navigate = useNavigate();
 
-    const login = () => {
+    const login = () => { //send username and password to server to check if they are correct and if they are, send back a token
         axios.post("http://localhost:8080/login", {
             username: username,
             password: password,

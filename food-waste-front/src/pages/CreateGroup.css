@@ -29,6 +29,7 @@
   justify-content: space-between;
   align-items: center;
   user-select: none;
+
 }
 
 .groups-li-item:hover {
@@ -179,4 +180,22 @@ input[type="submit"]:hover {
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
+}
+
+p {
+  color: black;
+}
+
+h2 {
+  color: rgb(245, 245, 245);
+  text-shadow: 2px 2px 2px #000000;
+}
+
+label {
+  color: rgb(245, 245, 245);
+  text-shadow: 2px 2px 2px #000000;
+}
+
+.groups-li {
+  background-color: red;
 }

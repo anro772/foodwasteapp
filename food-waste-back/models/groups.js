@@ -20,6 +20,5 @@ module.exports = (sequelize, DataTypes) => {
         });
     }
 
-    // Groups.hasMany(userGroups)
     return Groups;
 };

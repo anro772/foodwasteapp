@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Register.css'
 
 const SERVER_ADDR = "http://localhost:8080";
 
@@ -13,7 +14,7 @@ function Register() {
 
     let navigate = useNavigate();
 
-    const register = () => {
+    const register = () => { //register function that sends a post request to the server with the username and password and then logs in the user
         axios.post("http://localhost:8080/register", {
             username: usernameReg,
             password: passwordReg,

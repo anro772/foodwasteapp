@@ -17,10 +17,6 @@ function CreateGroupPage() {
   let [friends, setFriends] = useState([]);
   let [friendsList, setFriendsList] = useState([]);
 
-  const setUsersWithCallback = (newUsers, callback) => {
-    setUsers(newUsers, callback);
-  }
-
   let navigate = useNavigate();
 
   const dataFetch = useRef(false);
@@ -66,9 +62,6 @@ function CreateGroupPage() {
     navigate('/');
   }
 
-
-
-
   const createGroup = async () => {
     const response = await axios.post("http://localhost:8080/createGroup", {
       groupName: document.getElementById("setGroupName").value
@@ -86,11 +79,12 @@ function CreateGroupPage() {
       else {
         console.log(response.data.id);
         addUserGroup(response.data.id);
+        window.location.reload();
       }
     });
   }
 
-  const addUserGroup = async (gid) => {
+  const addUserGroup = async (gid) => { //function to add user to group after group is created
     const response = await axios.post("http://localhost:8080/createUserGroup", {
       userId: userId,
       groupId: gid,
@@ -113,7 +107,7 @@ function CreateGroupPage() {
     );
   }
 
-  const getUserGroups = async (id) => {
+  const getUserGroups = async (id) => { //function to get all groups user is in
     const response = await axios.get("http://localhost:8080/userGroups/" + id + '', {
       headers: {
         accessToken: sessionStorage.getItem('accessToken')
@@ -127,7 +121,7 @@ function CreateGroupPage() {
     });
   }
 
-  const getUsers = async (id) => {
+  const getUsers = async (id) => {  //function to get all users
     await axios.get("http://localhost:8080/users", {
       headers: {
         accessToken: sessionStorage.getItem('accessToken')
@@ -148,7 +142,7 @@ function CreateGroupPage() {
     });
   }
 
-  const hideToggle = (id, name, preference) => {
+  const hideToggle = (id, name, preference) => { //function to hide add group card
     console.log(id, name, preference);
     //clear localstorage
     localStorage.clear();
@@ -160,7 +154,7 @@ function CreateGroupPage() {
     localStorage.setItem('groupPreference', preference);
   }
 
-  const hideToggleView = (id, name, preference) => {
+  const hideToggleView = (id, name, preference) => { //function to hide view group card
     //clear localstorage
     localStorage.clear();
     document.getElementById('card-view').removeAttribute('hidden');
@@ -173,29 +167,19 @@ function CreateGroupPage() {
     viewFriends(id, userId);
   }
 
-  const showToggleView = () => {
+  const showToggleView = () => { //function to show view group card
     document.getElementById('card-view').setAttribute('hidden', 'true');
     document.getElementById('transparent-dark').setAttribute('hidden', 'true');
     localStorage.clear();
   }
 
-  const showToggle = () => {
+  const showToggle = () => { //function to show add group card
     document.getElementById('card-add').setAttribute('hidden', 'true');
     document.getElementById('transparent-dark').setAttribute('hidden', 'true');
     localStorage.clear();
   }
 
-  const cLog = (users) => {
-    console.log(users.length);
-    let listGroupItems = [];
-    for (let i = 0; i < users.length; i++) {
-      listGroupItems.push(<ListGroup.Item key={i}>users[i].username</ListGroup.Item>)
-      console.log(users[i].username);
-    }
-    return listGroupItems;
-  }
-
-  const addUserToGroup = async (uid) => {
+  const addUserToGroup = async (uid) => { //function to add user to group
     const gid = localStorage.getItem('groupId');
     const gname = localStorage.getItem('groupName');
     const gpreference = localStorage.getItem('groupPreference');
@@ -239,7 +223,7 @@ function CreateGroupPage() {
     });
   }
 
-  const viewFriends = (gid, uid) => {
+  const viewFriends = (gid, uid) => { //function to get all friends in group
     const response = axios.get("http://localhost:8080/groupMembers/" + gid + '', {
       headers: {
         accessToken: sessionStorage.getItem('accessToken')
@@ -288,14 +272,14 @@ function CreateGroupPage() {
         </Navbar.Collapse>
       </Navbar>
       <div className="CreateGroupPage">
-        <h2>Create Group:</h2>
+        <h2>Create Group</h2>
         <div id="labels">
           <label>
-            Group Name:
+            Group Name
             <input type="text" name="groupName" id="setGroupName" />
           </label>
           <label>
-            Dietary Preference:
+            Dietary Preference
             <select name="dietaryPreference" id="setPreference">
               <option value=""></option>
               <option value="vegetarian">Vegetarian</option>

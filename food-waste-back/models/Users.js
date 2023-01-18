@@ -41,14 +41,10 @@ module.exports = (sequelize, DataTypes) => {
         Users.hasMany(models.UserGroups, {
             foreignKey: 'userId'
         });
-        //create one to one relationship between user and userFridge
+
         Users.hasOne(models.UserFridge, {
             foreignKey: 'userId'
         });
-
-        // Users.hasMany(models.ClaimedFood, {
-        //     foreignKey: 'userId'
-        // });
     }
     return Users;
 };

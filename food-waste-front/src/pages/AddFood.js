@@ -28,12 +28,9 @@ function AddFoodForm() {
 
   let navigate = useNavigate();
 
-  const dataFetch = useRef(false);
+  const dataFetch = useRef(false); //for running the useEffect only once
 
-
-
-
-  const getUser = () => {
+  const getUser = () => { //function to get the user from the backend with the authorization bearer token
     axios.get("http://localhost:8080/current", {
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
@@ -49,9 +46,7 @@ function AddFoodForm() {
     });
   }
 
-  function onClickAddFood() {
-    navigate('/addfood')
-  }
+  //navigation functions
 
   function onClickFridge() {
     navigate('/fridge');
@@ -70,29 +65,34 @@ function AddFoodForm() {
     navigate('/');
   }
 
-  const addFood = () => {
+  const addFood = () => { //function to add food to the fridge
 
     if (foodName && availability) {
       const dateRegex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
       if (dateRegex.test(availability)) {
         axios.post("http://localhost:8080/addUserFridge", {
+          //add with headers the authorization bearer token
           userId: userId,
           foodName: foodName,
           availability: availability,
           foodCategory: foodCategory,
+          headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem('accessToken')
+          },
         }).then((response) => {
           if (response.data.error) {
             console.log(response.data.error);
           }
           else {
             console.log(response.data);
+            window.location.reload();
           }
         });
       }
     }
   }
 
-  useEffect(() => {
+  useEffect(() => { //useEffect to run only once
     if (!dataFetch.current) {
 
       //check if session storage has accessToken
@@ -105,7 +105,7 @@ function AddFoodForm() {
     }
   }, []);
 
-  const validate = () => {
+  const validate = () => { //function to validate the form
     const newErrors = {};
     if (!foodName) {
       newErrors.foodName = 'Food name is required';
@@ -125,13 +125,12 @@ function AddFoodForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event) => { //function to handle the submit of the form
     event.preventDefault();
     if (!validate()) {
       return;
     }
     try {
-      // send request to backend as before
     } catch (error) {
       console.error(error);
     }

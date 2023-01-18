@@ -4,9 +4,26 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, NavLink, Routes } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
 import './Home.css';
 
 function Home() {
+
+    let navigate = useNavigate();
+
+    function onClickFridge() {
+        navigate('/fridge');
+    }
+
+    function onClickLogout() {
+        sessionStorage.removeItem('accessToken');
+        navigate('/login');
+    }
+
+    function onClickGroups() {
+        navigate('/groups');
+    }
+
 
     const [username, setUsername] = useState("");
 
@@ -49,7 +66,6 @@ function Home() {
             }
             else {
                 // console.log(response);
-                console.log('aaaaaaa');
                 console.log(response.data);
             }
         });
@@ -70,20 +86,18 @@ function Home() {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                        <Nav.Link href="#fridge">Fridge</Nav.Link>
-                        <Nav.Link href="#groups">Groups</Nav.Link>
+                        <Nav.Link onClick={onClickFridge}>Fridge</Nav.Link>
+                        <Nav.Link onClick={onClickGroups}>Groups</Nav.Link>
                     </Nav>
                     <Nav className='account-name'>
                         <NavDropdown title={username} id="basic-nav-dropdown">
-                            <NavDropdown.Item className="nav-dropdown" href="#action/3.1">Log Out</NavDropdown.Item>
+                            <NavDropdown.Item className="nav-dropdown" onClick={onClickLogout}>Log Out</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
 
-            <div>
-                <button>Post</button>
-            </div>
+
         </div>
     );
 }

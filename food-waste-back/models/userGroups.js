@@ -4,6 +4,21 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true
+        },
+        
+        groupName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                len: [1, 30]
+            }
+        },
+        preference: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            validate: {
+                len: [1, 30]
+            }
         }
     });
 

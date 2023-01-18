@@ -1,5 +1,3 @@
-const userGroups = require("./userGroups");
-
 module.exports = (sequelize, DataTypes) => {
     const Groups = sequelize.define("Groups", {
         id: {
@@ -11,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                len: [4, 15]
+                len: [2, 30]
             }
         }
     });

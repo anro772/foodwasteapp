@@ -7,6 +7,8 @@ const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const Foods = require('../models').Foods;
 const UserFridge = require('../models').UserFridge;
+const Groups = require('../models').Groups;
+const UserGroups = require('../models').UserGroups;
 const { validateToken } = require('../middleware/AuthMiddleware');
 let ExtractJwt = passportJWT.ExtractJwt;
 let JwtStrategy = passportJWT.Strategy;
@@ -56,6 +58,13 @@ const getFoods = async () => {
     return await Foods.findAll();
 };
 
+const createGroup = async ({ groupName }) => {
+    return await Groups.create({ groupName });
+};
+
+const createUserGroup = async ({ userId, groupId, groupName, preference }) => {
+    return await UserGroups.create({ userId, groupId, groupName, preference });
+};
 
 const createUserFridge = async ({ userId, foodId, availability }) => {
     return await UserFridge.create({ userId, foodId, availability });
@@ -151,5 +160,39 @@ router.get('/foodsInFridge/:userId', async (req, res) => {
     const { userId } = req.params;
     getFoodsInFridge(userId).then(foods => res.json(foods));
 });
+
+router.post('/createGroup', async (req, res) => {
+    const { groupName } = req.body;
+    const group = await createGroup({ groupName });
+    res.json(group);
+});
+
+router.post('/createUserGroup', async (req, res) => {
+    const { userId, groupId, groupName, preference } = req.body;
+    const userGroup = await createUserGroup({ userId, groupId, groupName, preference });
+    res.json(userGroup);
+});
+
+function getGroups() {
+    return Groups.findAll();
+}
+
+router.get('/groups', async (req, res) => {
+    getGroups().then(groups => res.json(groups));
+});
+
+function getUserGroups(userId) {
+    return UserGroups.findAll({
+        where: {
+            userId,
+        },
+    });
+}
+
+router.get('/userGroups/:userId', async (req, res) => {
+    const { userId } = req.params;
+    getUserGroups(userId).then(groups => res.json(groups));
+});
+
 
 module.exports = router

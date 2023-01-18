@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, NavLink, Routes } from 'react-router-dom';
 import Register from './Register';
 import { useNavigate } from 'react-router-dom';
+import './Login.css';
 const SERVER_ADDR = "http://localhost:8080";
 
 function Login() {
@@ -42,7 +43,7 @@ function Login() {
         <div className="login">
             <h1>Login</h1>
             <label>Username</label>
-            <input type="text" onChange={(e) => {
+            <input type="text-login" onChange={(e) => {
                 setUsername(e.target.value);
             }} />
             <label>Password</label>

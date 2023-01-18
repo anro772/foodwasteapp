@@ -1,0 +1,87 @@
+.CreateGroupPage {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.groups-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.groups-list li {
+  margin: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px 0px #ccc;
+  background-color: #f9f9f9;
+  width: 700px;
+}
+
+h2,
+h3 {
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+input[type="text"],
+select {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px;
+  font-size: 16px;
+  width: 80%;
+}
+
+input[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+input[type="submit"]:hover {
+  background-color: #3e8e41;
+}
+
+/* ul {
+    margin: 0;
+    padding: 0;
+  }
+  
+  li {
+    list-style: none;
+    
+  } */
+
+
+.friends-list {
+  margin-top: 10px;
+}
+
+.friends-list h4 {
+  font-weight: normal;
+  margin-bottom: 5px;
+}
+
+.friends-list ul {
+  margin: 0;
+  padding: 0;
+  width: 200px;
+}
+
+.friends-list li {
+  list-style: none;
+  width: 500px;
+}

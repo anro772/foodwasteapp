@@ -1,0 +1,48 @@
+.add-food-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    margin: 2em;
+    padding: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px  ;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .form-item{
+    margin:10px;
+  }
+  
+  .form-control:focus {
+    border: 2px solid #555;
+  }
+  
+  .error-message {
+    color: red;
+    margin-top: 8px;
+    margin:10px
+  }
+  
+  .add-food-form button {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .add-food-form button:hover {
+    background-color: #45a049;
+  }
